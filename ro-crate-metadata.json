@@ -35,14 +35,14 @@
                     "@id": "https://w3id.org/ldac/profile#Notebook"
                 }
             ],
-            "description": "A exploration notebook for the AusReddit aggregated data",
+            "description": "A exploration notebook for the Twittersphere aggregated data",
             "encodingFormat": "application/x-ipynb+json",
             "input": [
                 {
                     "@id": "arcp://name,hdl10.25912~RDF_1754373503052"
                 }
             ],
-            "name": "AusReddit Exploration Notebook"
+            "name": "Twittersphere Exploration Notebook"
         },
         {
             "@id": "https://nla.gov.au/nla.party-1875454",
