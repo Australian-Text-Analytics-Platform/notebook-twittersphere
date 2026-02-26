@@ -1,0 +1,55 @@
+{
+    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@graph": [
+        {
+            "@id": "./",
+            "@type": "Dataset",
+            "datePublished": "2026-02-26T14:16:02+11:00",
+            "hasPart": [
+                {
+                    "@id": "exploration.ipynb"
+                }
+            ]
+        },
+        {
+            "@id": "ro-crate-metadata.json",
+            "@type": "CreativeWork",
+            "about": {
+                "@id": "./"
+            },
+            "conformsTo": {
+                "@id": "https://w3id.org/ro/crate/1.1"
+            }
+        },
+        {
+            "@id": "exploration.ipynb",
+            "@type": [
+                "File",
+                "SoftwareApplication"
+            ],
+            "author": [
+                { "@id": "https://nla.gov.au/nla.party-1875454" }
+            ],
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/ldac/profile#Notebook"
+                }
+            ],
+            "description": "A exploration notebook for the AusReddit aggregated data",
+            "encodingFormat": "application/x-ipynb+json",
+            "input": [
+                {
+                    "@id": "arcp://name,hdl10.25912~RDF_1754373503052"
+                }
+            ],
+            "name": "AusReddit Exploration Notebook"
+        },
+        {
+            "@id": "https://nla.gov.au/nla.party-1875454",
+            "@type": "Organization",
+            "name": "QUT Digital Observatory",
+            "description": "The Digital Observatory at QUT Brisbane",
+            "email": "digitalobservatory@qut.edu.au"
+        }
+    ]
+}

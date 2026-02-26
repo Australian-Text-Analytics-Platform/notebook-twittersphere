@@ -1,0 +1,12 @@
+[project]
+name = "notebook-ausreddit"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "pandas>=3.0.1",
+    "plotly>=6.5.2",
+    "tqdm>=4.67.3",
+]
