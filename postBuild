@@ -1,0 +1,11 @@
+#!/bin/bash
+set -eux
+
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Make uv available in PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# Verify
+uv --version
