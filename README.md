@@ -1,4 +1,6 @@
-[![Binder](https://binderhub.rc.nectar.org.au/badge_logo.svg)](https://binderhub.rc.nectar.org.au/v2/gh/git@github.com:Australian-Text-Analytics-Platform/notebook-twittersphere.git/HEAD)
+# Australian Twittersphere (AuTS) aggregated data - Notebook
+
+[![Binder](https://binderhub.rc.nectar.org.au/badge_logo.svg)](https://binderhub.rc.nectar.org.au/v2/gh/Australian-Text-Analytics-Platform/notebook-twittersphere/HEAD?labpath=exploration.ipynb)
 
 In this notebook (exploration.ipynb) you will be able to find ways of getting data about the QUT Digital Observatory's Australian Twittersphere (AuTS) collection. For more information on the AuTS go here - https://www.digitalobservatory.net.au/resources/australian-twittersphere/
 
@@ -10,7 +12,7 @@ The notebook/s can access:
 + Domains/URLs for the entire collection
 + Hashtags for the entire collection
 
-&#x1F6D1; Note: you cannot access the AuTS directly from this notebook - you need to contact the Digital Observatory if you want to get any twitter data from the collection.
+&#x1F6D1; Note: Using this notebook will download data from https://data.ldaca.edu.au portal's aggregated collection
 
 To run the notebook locally, run `uv run --with jupyter jupyter lab` in your terminal. 
 
