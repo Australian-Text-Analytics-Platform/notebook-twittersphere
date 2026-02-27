@@ -12,17 +12,23 @@ kiwisolver==1.4.9
     # via matplotlib
 matplotlib==3.10.8
     # via notebook-ausreddit
+narwhals==2.17.0
+    # via plotly
 numpy==2.4.2
     # via
     #   contourpy
     #   matplotlib
     #   pandas
 packaging==26.0
-    # via matplotlib
+    # via
+    #   matplotlib
+    #   plotly
 pandas==3.0.1
     # via notebook-ausreddit
 pillow==12.1.1
     # via matplotlib
+plotly==6.5.2
+    # via notebook-ausreddit
 pyparsing==3.3.2
     # via matplotlib
 python-dateutil==2.9.0.post0
@@ -35,3 +41,4 @@ tqdm==4.67.3
     # via notebook-ausreddit
 tzdata==2025.3 ; sys_platform == 'emscripten' or sys_platform == 'win32'
     # via pandas
+
