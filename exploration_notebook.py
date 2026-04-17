@@ -360,65 +360,46 @@ class Exploration:
 
     # --- Domain Specific Methods ---
 
-    def top_domains_in_date_range(self, data: pd.DataFrame, start_date: str, end_date: str, top_n: int = 20) -> Optional[pd.DataFrame]:
+    def top_domains_in_date_range(self, data_loc: str, start_date: str, end_date: str, top_n: int = 20) -> Optional[pd.DataFrame]:
         """
         Filter data for top N domains within a specified date range,
         based on their summed frequencies. Assumes 'domain' and 'total_frequency' columns.
         """
         try:
-            data_copy = data.copy()
-            data_copy['date'] = pd.to_datetime(data_copy['date'])
-            mask = (data_copy['date'] >= start_date) & (data_copy['date'] <= end_date)
-            filtered_data = data_copy.loc[mask]
 
-            if filtered_data.empty:
-                return pd.DataFrame(columns=['domain', 'total_frequency'])
+            filtered_data = pd.read_parquet(data_loc, filters=(('date', '>=', start_date), ('date', '<=', end_date)))
 
-            if 'domain' not in filtered_data.columns:
-                print("Error: 'domain' column not found in data.")
-                return None
-            if 'total_frequency' not in filtered_data.columns:
-                print("Error: 'total_frequency' column not found in data.")
-                return None
-
+            # Group by 'domain' and sum 'total_frequency'
+            # Assuming 'domain' column for domains and 'total_frequency' for their counts
             domain_frequencies = filtered_data.groupby('domain')['total_frequency'].sum()
+
+            # Sort by frequency in descending order and get top N
             top_domains_series = domain_frequencies.sort_values(ascending=False).head(top_n)
+
+            # Convert the resulting Series to a DataFrame
             top_domains_df = top_domains_series.reset_index()
             
             return top_domains_df
         except KeyError as e:
-            print(f"Error processing data: Missing column {e}. Ensure 'date', 'domain', and 'total_frequency' columns exist.")
+            print(f"Error processing data: Missing column {e}. Ensure 'date', 'domain' and 'total_frequency' columns exist.")
             return None
         except Exception as e:
             print(f"Error filtering and ranking domains: {e}")
             return None
 
-    def search_domain_in_date_range(self, data: pd.DataFrame, domain_to_search: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
+    def search_domain_in_date_range(self, data_loc: str, domain_to_search: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
         """
         Search for a domain keyword within a specified date range and return its daily occurrences and frequencies.
-        Matches keyword as a whole word, case-insensitively, within the 'domain' column. Assumes 'domain' and 'total_frequency' columns.
+        Matches keyword as whole 'domain' column. Assumes 'domain' and 'total_frequency' columns.
         """
         try:
-            data_copy = data.copy()
-            data_copy['date'] = pd.to_datetime(data_copy['date'])
+            filtered_data = pd.read_parquet(data_loc, filters=(('date', '>=', start_date), ('date', '<=', end_date), ('domain', '=', domain_to_search)))
 
-            if 'domain' not in data_copy.columns or not pd.api.types.is_string_dtype(data_copy['domain']):
-                data_copy['domain'] = data_copy['domain'].astype(str)
-            if 'total_frequency' not in data_copy.columns:
-                 print("Error: 'total_frequency' column not found.")
-                 return None
+            # Convert the resulting Series to a DataFrame
+            # Discard specific retweet_frequency, quote_tweet_frequency, reply_tweet_frequency, original_tweet_frequency columns
+            domain_search_df = filtered_data[['date', 'domain', 'total_frequency']].sort_values(by='date').reset_index()
 
-            date_mask = (data_copy['date'] >= start_date) & (data_copy['date'] <= end_date)
-            keyword_mask = data_copy['domain'].str.contains(f'\\b{domain_to_search}\\b', case=False, na=False, regex=True)
-            combined_mask = date_mask & keyword_mask
-            filtered_data = data_copy.loc[combined_mask]
-
-            if filtered_data.empty:
-                print(f"Domain containing '{domain_to_search}' not found in the specified date range.")
-                return pd.DataFrame(columns=['date', 'domain', 'total_frequency'])
-
-            result_df = filtered_data[['date', 'domain', 'total_frequency']].sort_values(by='date')
-            return result_df
+            return domain_search_df
         except KeyError as e:
             print(f"Error processing data: Missing column {e}. Ensure 'date', 'domain', 'total_frequency' columns exist.")
             return None
@@ -426,41 +407,19 @@ class Exploration:
             print(f"Error during domain search: {e}")
             return None
 
-    def search_domain_total_frequency_in_range(self, data: pd.DataFrame, domain_keyword: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
+    def search_domain_total_frequency_in_range(self, data_loc: str, domain_keyword: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
         """
         Search for a domain keyword within a date range and return its total summed frequency.
-        Matches keyword as a whole word, case-insensitively, within the 'domain' column. Assumes 'domain' and 'total_frequency' columns.
+        Matches keyword as whole 'domain' column. Assumes 'domain' and 'total_frequency' columns.
         """
-        try:
-            data_copy = data.copy()
-            data_copy['date'] = pd.to_datetime(data_copy['date'])
 
-            if 'domain' not in data_copy.columns or not pd.api.types.is_string_dtype(data_copy['domain']):
-                data_copy['domain'] = data_copy['domain'].astype(str)
-            if 'total_frequency' not in data_copy.columns:
-                 print("Error: 'total_frequency' column not found.")
-                 return None
+        filtered_data = self.search_domain_in_date_range(data_loc, domain_keyword, start_date, end_date)
 
-            date_mask = (data_copy['date'] >= start_date) & (data_copy['date'] <= end_date)
-            keyword_mask = data_copy['domain'].str.contains(f'\\b{domain_keyword}\\b', case=False, na=False, regex=True)
-            combined_mask = date_mask & keyword_mask
-            filtered_data = data_copy.loc[combined_mask]
+        total_freq_sum = filtered_data['total_frequency'].sum()
+        results = {'domain': domain_keyword, 'total_frequency_sum': total_freq_sum}
+        return pd.DataFrame([results])
 
-            if filtered_data.empty:
-                print(f"Domain containing '{domain_keyword}' not found in the specified date range.")
-                return pd.DataFrame(columns=['domain', 'total_frequency_sum'])
-
-            total_freq_sum = filtered_data['total_frequency'].sum()
-            results = {'domain': domain_keyword, 'total_frequency_sum': total_freq_sum}
-            return pd.DataFrame([results])
-        except KeyError as e:
-            print(f"Error processing data: Missing column {e}.")
-            return None
-        except Exception as e:
-            print(f"Error during domain total frequency search: {e}")
-            return None
-
-    def plot_domain_frequencies_comparison(self, data: pd.DataFrame, domains_list: List[str], start_date: str, end_date: str) -> None:
+    def plot_domain_frequencies_comparison(self, data_loc: str, domains_list: List[str], start_date: str, end_date: str) -> None:
         """
         Plots a line graph comparing the daily frequencies of a list of domain keywords (up to 10)
         within a specified time range. Assumes 'domain' and 'total_frequency' columns.
@@ -473,17 +432,11 @@ class Exploration:
             return
 
         try:
-            data_copy = data.copy()
-            data_copy['date'] = pd.to_datetime(data_copy['date'])
 
-            if 'domain' not in data_copy.columns or not pd.api.types.is_string_dtype(data_copy['domain']):
-                data_copy['domain'] = data_copy['domain'].astype(str)
-            if 'total_frequency' not in data_copy.columns:
-                 print("Error: 'total_frequency' column not found.")
-                 return
+            relevant_data = pd.read_parquet(data_loc, filters=(('date', '>=', start_date), ('date', '<=', end_date), ('domain', 'in', domains_list)))
 
-            date_mask_overall = (data_copy['date'] >= start_date) & (data_copy['date'] <= end_date)
-            relevant_data = data_copy[date_mask_overall]
+            # date_mask_overall = (data_copy['date'] >= start_date) & (data_copy['date'] <= end_date)
+            # relevant_data = data_copy[date_mask_overall]
 
             if relevant_data.empty:
                 print(f"No data found in the date range {start_date} to {end_date}.")
@@ -492,7 +445,7 @@ class Exploration:
             all_domains_df = pd.DataFrame()
 
             for dom in domains_list:
-                keyword_mask = relevant_data['domain'].str.contains(f'\\b{dom}\\b', case=False, na=False, regex=True)
+                keyword_mask = relevant_data['domain'] == dom
                 domain_data = relevant_data[keyword_mask]
 
                 if not domain_data.empty:
@@ -521,13 +474,13 @@ class Exploration:
             fig = px.line(plot_df, x='date', y='frequency', color='domain',
                           title=f'Domain Keyword Frequency Comparison ({start_date} to {end_date})',
                           labels={'date': 'Date', 'frequency': 'Total Daily Frequency', 'domain': 'Domain Keyword'})
-            fig.show(renderer="vscode")
+            fig.show()
         except KeyError as e:
             print(f"Error processing data: Missing column {e}.")
         except Exception as e:
             print(f"Error generating domain comparison plot: {e}")
 
-    def plot_top_domains_trend(self, data: pd.DataFrame, start_date: str, end_date: str, top_n: int = 10) -> None:
+    def plot_top_domains_trend(self, data_loc: str, start_date: str, end_date: str, top_n: int = 10) -> None:
         """
         Identifies the top N domains within a specified date range based on their total summed frequency,
         and then plots their daily frequency trends over that period. Assumes 'domain' and 'total_frequency' columns.
@@ -539,17 +492,7 @@ class Exploration:
             print("Warning: Plotting more than 20 domains might make the graph cluttered.")
 
         try:
-            data_copy = data.copy()
-            data_copy['date'] = pd.to_datetime(data_copy['date'])
-
-            if 'domain' not in data_copy.columns or not pd.api.types.is_string_dtype(data_copy['domain']):
-                data_copy['domain'] = data_copy['domain'].astype(str)
-            if 'total_frequency' not in data_copy.columns:
-                 print("Error: 'total_frequency' column not found.")
-                 return
-
-            date_mask_overall = (data_copy['date'] >= start_date) & (data_copy['date'] <= end_date)
-            period_data = data_copy[date_mask_overall]
+            period_data = pd.read_parquet(data_loc, filters=(('date', '>=', start_date), ('date', '<=', end_date)))
 
             if period_data.empty:
                 print(f"No data found in the date range {start_date} to {end_date}.")
@@ -591,7 +534,7 @@ class Exploration:
             fig = px.line(plot_df, x='date', y='frequency', color='domain',
                           title=f'Daily Frequency Trend of Top {top_n} Domains ({start_date} to {end_date})',
                           labels={'date': 'Date', 'frequency': 'Total Daily Frequency', 'domain': 'Domain'})
-            fig.show(renderer="vscode")
+            fig.show()
         except KeyError as e:
             print(f"Error processing data: Missing column {e}.")
         except Exception as e:
