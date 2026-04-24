@@ -1,12 +1,15 @@
 [project]
-name = "notebook-ausreddit"
+name = "notebook-twittersphere"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "ipywidgets>=8.1.8",
+    "jupyter>=1.1.1",
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
     "plotly>=6.5.2",
+    "pyarrow>=23.0.1",
     "tqdm>=4.67.3",
 ]

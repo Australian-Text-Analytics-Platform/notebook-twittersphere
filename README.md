@@ -18,4 +18,4 @@ To run the notebook locally, run `uv run --with jupyter jupyter lab` in your ter
 
 ## Changing the notebook
 
-To add a dependency, run `uv add libraryname`; be sure to update `requirements.txt` by running `uv export --format requirements.txt --no-hashes > requirements.txt` (this copies the output of the export command into requirements.txt, where binder can read them)
+To add a dependency, run `uv add libraryname`; be sure to update `requirements.txt` by running `uv export --format requirements.txt --no-hashes > binder/requirements.txt` (this copies the output of the export command into requirements.txt, where binder can read them)
