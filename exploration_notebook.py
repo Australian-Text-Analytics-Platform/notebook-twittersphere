@@ -253,7 +253,7 @@ class Exploration:
         )
 
         fig = px.line(keywords_results, x='date', y='total_frequency', color='ngram',
-                      title=f'Keyword Frequency Comparison ({start_date} to {end_date})',
+                      title=f'N-gram Frequency Comparison ({start_date} to {end_date})',
                       labels={'date': 'Date', 'frequency': 'Total Daily Frequency'})
 
         return fig
@@ -338,7 +338,7 @@ class Exploration:
         )
 
         fig = px.line(keywords_results, x='date', y='total_frequency', color='hashtag',
-                      title=f'Keyword Frequency Comparison ({start_date} to {end_date})',
+                      title=f'Hashtag Frequency Comparison ({start_date} to {end_date})',
                       labels={'date': 'Date', 'frequency': 'Total Daily Frequency'})
 
         return fig
