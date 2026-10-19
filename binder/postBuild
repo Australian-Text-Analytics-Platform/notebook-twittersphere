@@ -9,3 +9,26 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Verify
 uv --version
+
+# Get the data; postBuild runs *before* making the docker image so it will be baked in
+wget https://data.ldaca.edu.au/api/object/arcp%3A%2F%2Fname%2Chdl10.25912~RDF_1758591652309%2F1grams_20210101-20230712_crate%2F.zip
+unzip -n 'arcp:%2F%2Fname,hdl10.25912~RDF_1758591652309%2F1grams_20210101-20230712_crate%2F.zip'
+
+wget https://data.ldaca.edu.au/api/object/arcp%3A%2F%2Fname%2Chdl10.25912~RDF_1758591652309%2F3grams_min100_20210101-20230712_crate%2F.zip
+unzip -n 'arcp:%2F%2Fname,hdl10.25912~RDF_1758591652309%2F3grams_min100_20210101-20230712_crate%2F.zip'
+
+wget https://data.ldaca.edu.au/api/object/arcp%3A%2F%2Fname%2Chdl10.25912~RDF_1758591652309%2Fhashtag_freq_daily_by_type_20210101_to_20240101_crate%2F.zip
+unzip -n 'arcp:%2F%2Fname,hdl10.25912~RDF_1758591652309%2Fhashtag_freq_daily_by_type_20210101_to_20240101_crate%2F.zip'
+
+wget https://data.ldaca.edu.au/api/object/arcp%3A%2F%2Fname%2Chdl10.25912~RDF_1758591652309%2FAuTS_emojis_crate%2F.zip
+unzip -n 'arcp:%2F%2Fname,hdl10.25912~RDF_1758591652309%2FAuTS_emojis_crate%2F.zip'
+
+wget https://data.ldaca.edu.au/api/object/arcp%3A%2F%2Fname%2Chdl10.25912~RDF_1758591652309%2Fdomain_freq_daily_by_type_20210101_to_20240101_crate%2F.zip
+unzip -n 'arcp:%2F%2Fname,hdl10.25912~RDF_1758591652309%2Fdomain_freq_daily_by_type_20210101_to_20240101_crate%2F.zip'
+
+rm ro-crate-metadata.json
+rm ro-crate-preview.html
+rm */*.csv
+rm *.zip
+mv */*.parquet data
+rmdir  hashtag_freq_daily_by_type_20210101_to_20240101_crate/ domain_freq_daily_by_type_20210101_to_20240101_crate/ AuTS_emojis_crate/ 3grams_min100_20210101-20230712_crate/ 1grams_20210101-20230712_crate/
